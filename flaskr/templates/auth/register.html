@@ -4,6 +4,27 @@
     <title>Crypto</title>
 </head>
 <body>
+    <a href="{{ url_for('login') }}">Uloguj se</a>
     <h1>Dobrodošli na stranicu registracije!</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        {{form.ime(placeholder ="Ime")}}
+        <br />
+        {{form.prezime(placeholder ="Prezime")}}
+        <br />
+        {{form.adresa(placeholder ="Adresa")}}
+        <br />
+        {{form.grad(placeholder ="Grad")}}
+        <br />
+        {{form.drzava(placeholder ="Država")}}
+        <br />
+        {{form.telefon(placeholder ="Broj telefona")}}
+        <br />
+        {{form.email(placeholder ="Email")}}
+        <br />
+        {{form.lozinka(placeholder ="Lozinka")}}
+        <br />
+        {{form.submit}}
+      </form>
 </body>
 </html>
