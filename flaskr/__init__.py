@@ -1,21 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for
+import os
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 
+basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
-
-
-@app.route('/', methods=['GET'])
-@app.route('/auth/login.html', methods=['GET'])
-def homepage():
-    return render_template('auth/login.html')
-
-@app.route('/', methods=['POST'])  
-@app.route("/auth/login.html", methods=['POST'])
-def login():
-    email = request.form.get('email')
-    password = request.form.get('password')
-    if email!='g@g.com':
-        return redirect(url_for('login'))
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
+app.secret_key = 'dsaJO@EjfoAJ90jca90j2' 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'database.db')
+db = SQLAlchemy(app)
+from flaskr import routes
