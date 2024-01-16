@@ -28,7 +28,7 @@ def login():
     if(password == "" or password.isspace()):
         return redirect(url_for('login'))
     u = Korisnici.query.filter_by(email=email).first()
-    if (u.lozinka!=password or not u):
+    if (not u or u.lozinka!=password):
         return redirect(url_for('login'))
     flask_login.login_user(u)
     return redirect(url_for('portfolio'))
