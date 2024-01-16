@@ -5,11 +5,13 @@
 </head>
 <body>
     <h1>Dobrodošli na stranicu prijave!</h1>
-    <form method="POST" action="">
-        <input  type="email" name="email" placeholder="Upiši email">
-        <input  type="password" name="password" placeholder="Upiši lozinku">
-        <br>
-        <button>login</button>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        {{form.email(placeholder ="Upiši email")}}
+        <br/>
+        {{form.lozinka(placeholder ="Upiši lozinku")}}
+        <br/>
+        {{ form.submit }}
     </form>
     
 </body>
