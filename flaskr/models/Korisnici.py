@@ -11,3 +11,4 @@ class Korisnici(db.Model, flask_login.UserMixin):
     telefon = db.Column(db.String(length=10), nullable = False)
     email = db.Column(db.String(length=40), nullable = False, unique=True)
     lozinka = db.Column(db.String(length=40), nullable=False)
+    novac = db.Column(db.Integer(), nullable = False)

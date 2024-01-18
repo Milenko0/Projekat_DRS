@@ -1,11 +1,19 @@
 from flaskr import app, db
-from flask import render_template, request, redirect, url_for
-from flask_login import LoginManager, login_user, login_required
+from flask import render_template, request, redirect, url_for, flash
+from flask_login import LoginManager, login_user, login_required, current_user
 from flaskr.models.Korisnici import Korisnici
 from flaskr.models.FlaskForms import LoginForm, RegisterForm
+from flaskr.models.Coin import Coin
+from flaskr.models.crypto import Crypto
+from flaskr.models.Transaction import Transaction
+from multiprocessing import Queue, Process
+from datetime import datetime
 
+import email_validator
 #flask login
-login_manager = LoginManager()
+
+crypt = Crypto()
+login_manager = LoginManager()          
 login_manager.init_app(app)
 @login_manager.user_loader
 def user_loader(id):
@@ -27,7 +35,7 @@ def login():
         if (not u or u.lozinka!=lozinka):
             return redirect(url_for('login'))
         login_user(u)
-        return redirect(url_for('portfolio'))
+        return redirect(url_for('store'))
     return render_template('auth/login.html',form=form)
 
 #register
@@ -59,11 +67,53 @@ def register():
         return redirect(url_for('portfolio'))
     return render_template('auth/register.html', form=form)
 
-    
-
+@app.route('/store', methods=['GET','POST'])
+def store():
+        
+        coins = Coin.query.all()
+        cryptos = crypt.get_top_25()
+        for coin in coins:
+            for crypto in cryptos:
+                if crypto['name'] == coin.name:
+                    coin.current_value = crypto['quote']['USD']['price']
+                    db.session.add(coin)
+        db.session.commit()        
+        if not coins:
+            for crypto in cryptos:
+                crypto['quote']['USD']['price'] = '$ ' + "{:.2f}".format(crypto['quote']['USD']['price'])
+                new_coin = Coin(name=crypto['name'], symbol=crypto['symbol'],current_value=float(crypto['quote']['USD']['price'].replace('$','')))
+                db.session.add(new_coin)
+            db.session.commit()
+        if request.method == 'GET':
+            return render_template('store.html', cryptos=cryptos, coins=coins)
+        
+        selected_coin = request.form.get('selected_coin')
+        amount = request.form.get('amount')
+        result_queue = Queue()
+        p = Process(target=buy_coin, args=(selected_coin, amount, current_user.id, result_queue))
+        p.start()   
+        p.join() 
+        flash(result_queue.get())
+        return redirect(url_for('store'))  
 #Portfolio nakon login-a
 @app.route('/portfolio', methods=['GET','POST'])
 @login_required
 def portfolio():
     return render_template('portfolio.html')    
-        
+
+def buy_coin(selected_coin, amount, current_user_id, result_queue):
+    with app.app_context():  
+        korisnik = Korisnici.query.filter_by(id=current_user_id).first()  
+        coin = Coin.query.filter_by(symbol=selected_coin).first()
+        if coin is not None:
+            bought_amount = float(amount) / float(coin.current_value)
+            new_transaction = Transaction(coin_name = selected_coin, korisnik_id = current_user_id,date=str(datetime.Now()), amount = bought_amount, price = amount)
+        if float(amount) <= korisnik.novac:
+            korisnik.novac -= float(amount)
+            db.session.add(new_transaction)
+            db.session.commit()
+            result_queue.put('Transakcija uspesna')
+            return
+        else:
+            result_queue.put('Nemate dovoljno novca za zeljenu kupovinu')
+            return

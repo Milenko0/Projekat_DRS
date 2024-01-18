@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>Crypto</title>
+</head>
+<style>
+    td {
+    text-align: center;
+    border: 2px;
+    border-color: black;
+  }
+    tr{
+    border: 1px black;
+
+  }
+</style>
+<body>
+    <div>
+        <table style="width: 700px; border-collapse: collapse;">
+            <tr >
+                <th>Name</th>
+                <th>Symbol</th>
+                <th>Price</th>
+                <th>Updated</th>
+            </tr>
+            {% for obj in cryptos %}
+            <tr >
+              <td style="background-color: aliceblue;" >{{obj.name}}</td>
+              <td style="background-color: bisque;">{{obj.symbol}}</td>
+              <td style="background-color: aliceblue;">{{obj.quote.USD.price}}</td>
+              <td style="background-color: bisque;">{{obj.last_updated}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div style="color: rgb(38, 15, 246); font-weight: bold; font-size: medium;">
+                    {{ messages[0] }}<br> 
+                </div>
+            {% endif %}
+        {% endwith %}
+        <form method="POST">
+            <select id="selected_coin" name="selected_coin">
+                {%for coin in coins%}
+                    {%for crypto in cryptos%}
+                        {%if crypto.symbol == coin.symbol%}
+                            <option value="{{coin.symbol}}">{{ coin.name }} ({{ coin.symbol }}) - {{ crypto.quote.USD.price }}</option>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </select>
+            <input type="number" id="amount" name="amount">
+            <input type="submit"/>
+        </form>
+    </div>
+</body>
