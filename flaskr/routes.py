@@ -2,7 +2,7 @@ from flaskr import app, db
 from flask import render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, login_required, current_user
 from flaskr.models.Korisnici import Korisnici
-from flaskr.models.FlaskForms import LoginForm, RegisterForm
+from flaskr.models.FlaskForms import LoginForm, RegisterForm, ModifyForm
 from flaskr.models.Coin import Coin
 from flaskr.models.crypto import Crypto
 from flaskr.models.Transaction import Transaction
@@ -117,3 +117,37 @@ def buy_coin(selected_coin, amount, current_user_id, result_queue):
         else:
             result_queue.put('Nemate dovoljno novca za zeljenu kupovinu')
             return
+        
+@app.route('/modifyProfile', methods=['GET','POST'])
+@login_required
+def modify():
+    form = ModifyForm()
+    if form.is_submitted() is False:
+        return render_template('modifyProfile.html', form=form)
+    ime = form.ime.data
+    prezime = form.prezime.data
+    adresa = form.adresa.data
+    grad = form.grad.data
+    drzava = form.drzava.data
+    telefon = form.telefon.data
+    lozinka = form.lozinka.data
+    lozinkapotvrde = form.lozinkapotvrde.data
+    izmena = Korisnici.query.filter_by(id=current_user.id).first()
+    if (ime != "" and not ime.isspace()):
+            izmena.ime = ime
+    if (prezime != "" and not prezime.isspace()):
+            izmena.prezime = prezime
+    if (adresa != "" and not adresa.isspace()):
+            izmena.adresa = adresa
+    if (grad != "" and not grad.isspace()):
+            izmena.grad = grad
+    if (drzava != "" and not drzava.isspace()):
+            izmena.drzava = drzava
+    if(telefon != "" and not telefon.isspace()):
+            izmena.telefon = telefon
+    if(lozinka == lozinkapotvrde and lozinka != "" and not lozinka.isspace() and 
+                lozinkapotvrde != "" and not lozinkapotvrde.isspace()):
+            izmena.lozinka = lozinka
+    db.session.commit()
+    return redirect(url_for('store'))
+    

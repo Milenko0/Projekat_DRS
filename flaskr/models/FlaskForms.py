@@ -17,3 +17,14 @@ class RegisterForm(FlaskForm):
     email = EmailField(validators=[Email(),DataRequired(),Length(max=40)])
     lozinka = PasswordField(validators=[DataRequired(),Length(min=8,max=40)])
     submit = SubmitField(label='Otvori nalog')
+
+class ModifyForm(FlaskForm):
+    ime=StringField(validators=[Length(min=2, max=20)])
+    prezime=StringField(validators=[Length(min=2, max=20)])
+    adresa=StringField(validators=[Length(min=3, max=40)])
+    grad=StringField(validators=[Length(min=2, max=20)])
+    drzava = StringField(validators=[Length(min=4, max=20)])
+    telefon = StringField(validators=[Length(min=8, max=10)])
+    lozinka = PasswordField(validators=[Length(min=8,max=40)])
+    lozinkapotvrde = PasswordField(validators=[Length(min=8,max=40)])
+    submit = SubmitField(label='Izmeni nalog')
