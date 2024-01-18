@@ -107,7 +107,7 @@ def buy_coin(selected_coin, amount, current_user_id, result_queue):
         coin = Coin.query.filter_by(symbol=selected_coin).first()
         if coin is not None:
             bought_amount = float(amount) / float(coin.current_value)
-            new_transaction = Transaction(coin_name = selected_coin, korisnik_id = current_user_id,date=str(datetime.Now()), amount = bought_amount, price = amount)
+            new_transaction = Transaction(coin_name = selected_coin, korisnik_id = current_user_id,date=datetime.now(), amount = bought_amount, price = amount)
         if float(amount) <= korisnik.novac:
             korisnik.novac -= float(amount)
             db.session.add(new_transaction)
