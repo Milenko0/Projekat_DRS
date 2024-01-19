@@ -118,10 +118,22 @@ def store():
             p = Process(target=kupovina, args=(selected_coin, price, current_user.id, result_queue, datet))
         
         if button == 'prodaja':
+            suma=0
+            transactions = Transaction.query.filter_by(korisnik_id=current_user.id).all()
+            for transaction in transactions:
+                if transaction.price>0:
+                    suma+= transaction.amount
+                else:
+                 suma-=transaction.amount
             selected_coin = request.form.get('selected_coin_p')
             datet = request.form.get('datetime_p')
             amount = float(request.form.get('amount'))
             result_queue = Queue()
+            if suma < amount:
+                
+                result_queue.put('Uneli ste vise valute nego sto ste kupili')
+                flash(result_queue.get())
+                return redirect(url_for('store'))  
             p = Process(target=prodaja, args=(selected_coin, amount, current_user.id, result_queue, datet))
         p.start()   
         p.join() 
@@ -239,8 +251,7 @@ def kupovina(selected_coin, price, current_user_id, result_queue, datet):
             return
         
 def prodaja(selected_coin, amount, current_user_id, result_queue, datet):
-    with app.app_context():  
-        korisnik = Korisnici.query.filter_by(id=current_user_id).first()  
+    with app.app_context():   
         coin = Coin.query.filter_by(symbol=selected_coin).first()
         if coin is not None:
             exchange = ccxt.binance()
