@@ -5,6 +5,57 @@
 </head>
 <body>
     <a href="{{ url_for('store') }}">Registracija</a>
-    <h1>Uspesna prijava!</h1>
+
+    <table style="width: 700px; border-collapse: collapse;">
+        <tr >
+            <th>Valuta</th>
+            <th>Cena</th>
+            <th>Kolicina</th>
+            <th>Datum kupovine</th>
+        </tr>
+        {% for transakcija in transactions %}
+        <form method="POST"><tr >
+          <td style="background-color: aliceblue;" >{{transakcija.coin_name}}</td>
+          <td style="background-color: bisque;">{{transakcija.price}}</td>
+          <td style="background-color: aliceblue;">{{transakcija.amount}}</td>
+          <td style="background-color: bisque;">${{transakcija.date}}</td>
+          <input type="hidden" id="custId" name="transakcija" value="{{ transakcija.id }}">
+    <td class="td1"> <input type="submit" value="ukloni" class="button-26"
+        onclick="document.getElementById('custId').value = {{transakcija.id }} "></td>
+
+        </tr>
+        </form>
+        {% endfor %}
+    </table>
+    <table style="width: 800px; border: 2px;" border="1">
+        <thead>
+          <tr>
+            <th>Valuta</th>
+            <th>kupljeno</th>
+            <th>prodato</th>
+            <th>preostalo valute</th>
+            <th>+/-</th>
+          </tr>
+        </thead>
+        {% for coin_name, values in result.items() %}
+        <tbody>
+          <tr>
+            <td>{{coin_name}}</td>
+            <td>{{values.kupljeno}}</td>
+            <td>{{values.prodato}}</td>
+            <td>{{values.preostalo}}</td>
+            {%if values.profit >= 0.0%}
+              <td style="text-align: center;background-color: green;">{{"%.4f" % values.profit }}$</td>
+            {% else %}
+              <td style="text-align: center;background-color: red;">{{"%.4f" % values.profit }}$</td>
+            {% endif%}
+          </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+          
+    <p class="pt">(+/-)Total: {{"%.2f" % sum[1]}}$</p>
+
+
 </body>
 </html>
