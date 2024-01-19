@@ -68,8 +68,21 @@ def register():
         return redirect(url_for('portfolio'))
     return render_template('auth/register.html', form=form)
 
+
+
 @app.route('/store', methods=['GET','POST'])
+@login_required
 def store():
+        #skrivanje prodaje
+        imakupovina = False
+        trans = Transaction.query.filter_by(korisnik_id=current_user.id).first()
+        if trans:
+             transactions = Transaction.query.all()
+             for transaction in transactions:
+                  if transaction.price > 0:
+                       imakupovina = True
+                       break
+
         
         coins = Coin.query.all()
         cryptos = crypt.get_top_25()
@@ -86,7 +99,7 @@ def store():
                 db.session.add(new_coin)
             db.session.commit()
         if request.method == 'GET':
-            return render_template('store.html', cryptos=cryptos, coins=coins)
+            return render_template('store.html', cryptos=cryptos, coins=coins, imakupovina=imakupovina)
         button = request.form.get('submitbtn')
         if button == 'kupovina':
             selected_coin = request.form.get('selected_coin')
