@@ -142,18 +142,23 @@ def portfolio():
 
     transakcije = Transaction.query.filter_by(korisnik_id=current_user.id).all()
     transactions_by_coin_name = groupby(sorted(transakcije, key=attrgetter('coin_name')), attrgetter('coin_name'))
-    profit=0
+    
     result = {}
-    k=0
-    p=0
-    ka=0.00
-    pa=0
+    
     ukupnavrednost=0
     ukupanprofit=0
-    vrednost =0
+    
 
     for coin_name, transakcije in transactions_by_coin_name:
+        vrednost =0
+        profit=0
+        k=0
+        p=0
+        ka=0.00
+        pa=0
         for transakcija in transakcije:
+            
+            
             if transakcija.price >0:
                  k+=transakcija.price
                  ka+=transakcija.amount
@@ -166,7 +171,7 @@ def portfolio():
         preostalo = ka-pa   
         result[coin_name]['preostalo']=preostalo
         ulozeno = k*-1+ p *-1 
-        result[coin_name]['ulozeno']= ulozeno
+        result[coin_name]['ulozeno']= ulozeno* (-1)
         for crypto in cryptos:
              if crypto['symbol'] == coin_name:
                   vrednost = crypto['quote']['USD']['price'] * preostalo
@@ -225,8 +230,6 @@ def kupovina(selected_coin, price, current_user_id, result_queue, datet):
             bought_amount = float(price) / onecoin
             python_datetime = datetime.strptime(datet, '%Y-%m-%dT%H:%M')
             new_transaction = Transaction(coin_name = selected_coin, korisnik_id = current_user_id,date=python_datetime, amount = bought_amount, price = price)
-        if float(price) <= korisnik.novac:
-            korisnik.novac -= float(price)
             db.session.add(new_transaction)
             db.session.commit()
             result_queue.put('Transakcija uspesna')
