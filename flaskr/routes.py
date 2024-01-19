@@ -130,21 +130,21 @@ def portfolio():
         Transaction.query.filter_by(id=sold_transaction_id,korisnik_id=current_user.id).delete()
         db.session.commit()
         return redirect(url_for('portfolio'))
-
-             
-
+    cryptos = crypt.get_top_25()
     
-    
-   
+
     transakcije = Transaction.query.filter_by(korisnik_id=current_user.id).all()
     transactions_by_coin_name = groupby(sorted(transakcije, key=attrgetter('coin_name')), attrgetter('coin_name'))
     profit=0
     result = {}
-    pr = 0
     k=0
     p=0
     ka=0.00
     pa=0
+    ukupnavrednost=0
+    ukupanprofit=0
+    vrednost =0
+
     for coin_name, transakcije in transactions_by_coin_name:
         for transakcija in transakcije:
             if transakcija.price >0:
@@ -153,27 +153,23 @@ def portfolio():
             else:
                  p+=transakcija.price
                  pa+=transakcija.amount
-        result[coin_name] = { 'kupljeno': 0, 'prodato':0, 'profit': 0, 'preostalo':0, 'preostalo':0}
+        result[coin_name] = { 'kupljeno': 0, 'prodato':0, 'profit': 0, 'preostalo':0, 'ulozeno':0}
         result[coin_name]['kupljeno']= k*-1
-        result[coin_name]['prodato']=p *-1    
-        result[coin_name]['preostalo']=ka-pa 
-        result[coin_name]['profit']=k*-1+ p *-1 
-    
-    return render_template('portfolio.html', transactions=transactions, result=result)
-    # for coin_name, transactions in transactions_by_coin_name:
-    #     for r in cryptos:
-    #          if r['name'] == coin_name:
-    #             currentp = float(r['quote']['USD']['price'])
-    #     result[coin_name] = {'kolicina': 0, 'vrednost': 0, 'kupovna' 'profit': 0}
-    #     for transaction in transactions:
-    #         kol += transaction.amount
-    #         pr += transaction.price
-    #     result[coin_name]['kupovna'] = pr
-    #     result[coin_name]['kolicina'] = kol
-    #     result[coin_name]['vrednost'] = pr * currentp
-    # for key in result.keys():
-    #     result[key]['profit'] = float(pr) - float(pr*currentp)    
-
+        result[coin_name]['prodato']=p *-1  
+        preostalo = ka-pa   
+        result[coin_name]['preostalo']=preostalo
+        ulozeno = k*-1+ p *-1 
+        result[coin_name]['ulozeno']= ulozeno
+        for crypto in cryptos:
+             if crypto['symbol'] == coin_name:
+                  vrednost = crypto['quote']['USD']['price'] * preostalo
+                  profit = vrednost + ulozeno
+                  
+                  break
+        result[coin_name]['profit']= profit
+        ukupanprofit += profit
+        ukupnavrednost += vrednost
+    return render_template('portfolio.html', transactions=transactions, result=result, ukupanprofit=ukupanprofit, ukupnavrednost=ukupnavrednost)
      
         
 @app.route('/modifyProfile', methods=['GET','POST'])

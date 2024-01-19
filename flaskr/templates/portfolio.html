@@ -34,6 +34,7 @@
             <th>kupljeno</th>
             <th>prodato</th>
             <th>preostalo valute</th>
+            <th>ulozen novac</th>
             <th>+/-</th>
           </tr>
         </thead>
@@ -44,6 +45,7 @@
             <td>{{values.kupljeno}}</td>
             <td>{{values.prodato}}</td>
             <td>{{values.preostalo}}</td>
+            <td>{{values.ulozeno}}</td>
             {%if values.profit >= 0.0%}
               <td style="text-align: center;background-color: green;">{{"%.4f" % values.profit }}$</td>
             {% else %}
@@ -53,8 +55,10 @@
         </tbody>
         {% endfor %}
     </table>
+    <p>Ukupna vrednost preostale valute: {{ukupnavrednost}}$</p>
+    <p>Ukupan profit: {{ukupanprofit}}$</p>
           
-    <p class="pt">(+/-)Total: {{"%.2f" % sum[1]}}$</p>
+    
 
 
 </body>
