@@ -73,17 +73,17 @@ def register():
 @app.route('/store', methods=['GET','POST'])
 @login_required
 def store():
+        
         #skrivanje prodaje
         imakupovina = False
         trans = Transaction.query.filter_by(korisnik_id=current_user.id).first()
         if trans:
-             transactions = Transaction.query.all()
+             transactions = Transaction.query.filter_by(korisnik_id=current_user.id).all()
              for transaction in transactions:
                   if transaction.price > 0:
                        imakupovina = True
                        break
 
-        
         coins = Coin.query.all()
         cryptos = crypt.get_top_25()
         for coin in coins:
