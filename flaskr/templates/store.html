@@ -40,18 +40,35 @@
                 </div>
             {% endif %}
         {% endwith %}
+        <h4>Kupovina</h4>
         <form method="POST">
             <select id="selected_coin" name="selected_coin">
                 {%for coin in coins%}
                     {%for crypto in cryptos%}
                         {%if crypto.symbol == coin.symbol%}
-                            <option value="{{coin.symbol}}">{{ coin.name }} ({{ coin.symbol }}) - {{ crypto.quote.USD.price }}</option>
+                            <option value="{{coin.symbol}}">{{ coin.name }} ({{ coin.symbol }})</option>
                         {% endif %}
                     {% endfor %}
                 {% endfor %}
             </select>
-            <input type="number" id="amount" name="amount">
-            <input type="submit"/>
+            <input type="datetime-local" id="datetime" name="datetime"/>
+            <input type="number" id="price" name="price"/>
+            <button type="submit" name="submitbtn" value="kupovina" >kupovina</button>
+        </form>
+        <h4>Prodaja</h4>
+        <form method="POST">
+            <select id="selected_coin_p" name="selected_coin_p">
+                {%for coin in coins%}
+                    {%for crypto in cryptos%}
+                        {%if crypto.symbol == coin.symbol%}
+                            <option value="{{coin.symbol}}">{{ coin.name }} ({{ coin.symbol }})</option>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </select>
+            <input type="datetime-local" id="datetime_p" name="datetime_p"/>
+            <input type="text" id="amount" name="amount"/>
+            <button type="submit" name="submitbtn" value="prodaja">prodaja</button>
         </form>
     </div>
 </body>

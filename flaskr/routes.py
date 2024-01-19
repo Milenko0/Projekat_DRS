@@ -8,6 +8,7 @@ from flaskr.models.crypto import Crypto
 from flaskr.models.Transaction import Transaction
 from multiprocessing import Queue, Process
 from datetime import datetime
+import ccxt
 
 import email_validator
 #flask login
@@ -86,11 +87,20 @@ def store():
             db.session.commit()
         if request.method == 'GET':
             return render_template('store.html', cryptos=cryptos, coins=coins)
+        button = request.form.get('submitbtn')
+        if button == 'kupovina':
+            selected_coin = request.form.get('selected_coin')
+            datet = request.form.get('datetime')
+            price = request.form.get('price')
+            result_queue = Queue()
+            p = Process(target=kupovina, args=(selected_coin, price, current_user.id, result_queue, datet))
         
-        selected_coin = request.form.get('selected_coin')
-        amount = request.form.get('amount')
-        result_queue = Queue()
-        p = Process(target=buy_coin, args=(selected_coin, amount, current_user.id, result_queue))
+        if button == 'prodaja':
+            selected_coin = request.form.get('selected_coin_p')
+            datet = request.form.get('datetime_p')
+            amount = float(request.form.get('amount'))
+            result_queue = Queue()
+            p = Process(target=prodaja, args=(selected_coin, amount, current_user.id, result_queue, datet))
         p.start()   
         p.join() 
         flash(result_queue.get())
@@ -100,23 +110,6 @@ def store():
 @login_required
 def portfolio():
     return render_template('portfolio.html')    
-
-def buy_coin(selected_coin, amount, current_user_id, result_queue):
-    with app.app_context():  
-        korisnik = Korisnici.query.filter_by(id=current_user_id).first()  
-        coin = Coin.query.filter_by(symbol=selected_coin).first()
-        if coin is not None:
-            bought_amount = float(amount) / float(coin.current_value)
-            new_transaction = Transaction(coin_name = selected_coin, korisnik_id = current_user_id,date=datetime.now(), amount = bought_amount, price = amount)
-        if float(amount) <= korisnik.novac:
-            korisnik.novac -= float(amount)
-            db.session.add(new_transaction)
-            db.session.commit()
-            result_queue.put('Transakcija uspesna')
-            return
-        else:
-            result_queue.put('Nemate dovoljno novca za zeljenu kupovinu')
-            return
         
 @app.route('/modifyProfile', methods=['GET','POST'])
 @login_required
@@ -151,3 +144,46 @@ def modify():
     db.session.commit()
     return redirect(url_for('store'))
     
+def kupovina(selected_coin, price, current_user_id, result_queue, datet):
+    with app.app_context():  
+        korisnik = Korisnici.query.filter_by(id=current_user_id).first()  
+        coin = Coin.query.filter_by(symbol=selected_coin).first()
+        if coin is not None:
+            exchange = ccxt.binance()
+            timestamp = int(datetime.strptime(datet, '%Y-%m-%dT%H:%M').timestamp() * 1000)
+            valute = selected_coin + '/USDT' 
+            response = exchange.fetch_ohlcv(valute, '1m', timestamp, 1)
+            onecoin = response[0][1]
+            bought_amount = float(price) / onecoin
+            python_datetime = datetime.strptime(datet, '%Y-%m-%dT%H:%M')
+            new_transaction = Transaction(coin_name = selected_coin, korisnik_id = current_user_id,date=python_datetime, amount = bought_amount, price = price)
+        if float(price) <= korisnik.novac:
+            korisnik.novac -= float(price)
+            db.session.add(new_transaction)
+            db.session.commit()
+            result_queue.put('Transakcija uspesna')
+            return
+        else:
+            result_queue.put('Nemate dovoljno novca za zeljenu kupovinu')
+            return
+        
+def prodaja(selected_coin, amount, current_user_id, result_queue, datet):
+    with app.app_context():  
+        korisnik = Korisnici.query.filter_by(id=current_user_id).first()  
+        coin = Coin.query.filter_by(symbol=selected_coin).first()
+        if coin is not None:
+            exchange = ccxt.binance()
+            timestamp = int(datetime.strptime(datet, '%Y-%m-%dT%H:%M').timestamp() * 1000)
+            valute = selected_coin + '/USDT' 
+            response = exchange.fetch_ohlcv(valute, '1m', timestamp, 1)
+            onecoin = response[0][1]
+            price = onecoin * amount * -1.0
+            python_datetime = datetime.strptime(datet, '%Y-%m-%dT%H:%M')
+            new_transaction = Transaction(coin_name = selected_coin, korisnik_id = current_user_id,date=python_datetime, amount = amount, price = price)
+            db.session.add(new_transaction)
+            db.session.commit()
+            result_queue.put('Transakcija uspesna')
+            return
+        else:
+            result_queue.put('Neuspesan unos')
+            return
