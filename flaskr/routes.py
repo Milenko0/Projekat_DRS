@@ -1,6 +1,6 @@
 from flaskr import app, db
 from flask import render_template, request, redirect, url_for, flash
-from flask_login import LoginManager, login_user, login_required, current_user
+from flask_login import LoginManager, login_user, login_required, current_user, logout_user
 from flaskr.models.Korisnici import Korisnici
 from flaskr.models.FlaskForms import LoginForm, RegisterForm, ModifyForm
 from flaskr.models.Coin import Coin
@@ -11,8 +11,9 @@ from itertools import groupby
 from operator import attrgetter
 from datetime import datetime
 import ccxt
-
 import email_validator
+
+
 #flask login
 
 crypt = Crypto()
@@ -40,6 +41,12 @@ def login():
         login_user(u)
         return redirect(url_for('store'))
     return render_template('auth/login.html',form=form)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
 
 #register
 @app.route('/auth/register', methods=['GET','POST'])
