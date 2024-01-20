@@ -34,7 +34,7 @@
         text-transform: uppercase;
     }
 
-    table{
+    .tabele{
       max-height: 300px;
       margin: 50px 20px;
       font-size: 22px;
@@ -52,7 +52,7 @@
     }
 
     td,th{
-      padding: 15px 35px;
+      padding: 5px 15px;
       text-align: left;
     }
 
@@ -68,10 +68,6 @@
 
     th:last-child{
         border-radius: 0 20px 0 0;
-    }
-
-    tr:nth-child(even){
-        background-color: #364a5a;
     }
 
     .td1 {
@@ -110,6 +106,7 @@
         margin-bottom: 10px; 
     }
 
+
 </style>
 <body>
 <div class="header">
@@ -120,66 +117,90 @@
     <li><a href="{{url_for('logout')}}">Izloguj se</a></li>
   </ul>
 </div>
-<div class="tables-container">
-  <div style="overflow-x: auto;">
-  <table>
-    <thead>
-      <tr >
-          <th>Valuta</th>
-          <th>Cena</th>
-          <th>Kolicina</th>
-          <th>Datum kupovine</th>
-      </tr>
-      </thead>
-      {% for transakcija in transactions %}
-      <form method="POST"><tr >
-        <td style="background-color: aliceblue;" >{{transakcija.coin_name}}</td>
-        <td style="background-color: bisque;">{{transakcija.price}}</td>
-        <td style="background-color: aliceblue;">{{transakcija.amount}}</td>
-        <td style="background-color: bisque;">${{transakcija.date}}</td>
-        <input class="imp" type="hidden" id="custId" name="transakcija" value="{{ transakcija.id }}">
-        <td class="td1"> <input type="submit" value="ukloni" class="button-26"
-      onclick="document.getElementById('custId').value = {{transakcija.id }} "></td>
 
-      </tr>
-      </form>
-      {% endfor %}
-  </table>
-  </div>
-  <div style="overflow-x: auto;">
-  <table>
-      <thead>
-        <tr>
-          <th>Valuta</th>
-          <th>Kupljeno</th>
-          <th>Prodato</th>
-          <th>Preostalo valute</th>
-          <th>Ulozen novac</th>
-          <th>+/-</th>
-        </tr>
-      </thead>
-      {% for coin_name, values in result.items() %}
-      <tbody>
-        <tr>
-          <td>{{coin_name}}</td>
-          <td>{{values.kupljeno}}</td>
-          <td>{{values.prodato}}</td>
-          <td>{{values.preostalo}}</td>
-          <td>{{values.ulozeno}}</td>
-          {%if values.profit >= 0.0%}
-            <td style="text-align: center;background-color: green;">{{"%.4f" % values.profit }}$</td>
-          {% else %}
-            <td style="text-align: center;background-color: red;">{{"%.4f" % values.profit }}$</td>
-          {% endif%}
-        </tr>
-      </tbody>
-      {% endfor %}
-  </table>
-  </div>
-  </div>
-  <div class="p">
-  <p>Ukupna vrednost preostale valute: {{ukupnavrednost}}$</p>
-  <p>Ukupan profit: {{ukupanprofit}}$</p>
-  </div>
+<table>
+  <tr >
+      <td>
+        
+          <table class="tabele">
+            <thead>
+              <tr >
+                  <th>Valuta</th>
+                  <th>Cena</th>
+                  <th>Kolicina</th>
+                  <th>Datum kupovine</th>
+                  <th></th>
+              </tr>
+              </thead>
+              {% for transakcija in transactions %}
+              <form method="POST"><tr >
+                <td style="background-color: aliceblue;" >{{transakcija.coin_name}}</td>
+                <td style="background-color: bisque;">{{transakcija.price}}</td>
+                <td style="background-color: aliceblue;">{{transakcija.amount}}</td>
+                <td style="background-color: bisque;">${{transakcija.date}}</td>
+                <input class="imp" type="hidden" id="custId" name="transakcija" value="{{ transakcija.id }}">
+                <td class="td1"> <input type="submit" value="ukloni" class="button-26"
+              onclick="document.getElementById('custId').value = {{transakcija.id }} "></td>
+        
+              </tr>
+              </form>
+              {% endfor %}
+            
+          </table>
+          
+      </td>
+      <td>
+        <table>
+          <tr >
+              <td >
+                <div style="overflow-y: auto;">
+                  <table class="tabele">
+                      <thead>
+                        <tr>
+                          <th>Valuta</th>
+                          <th>Kupljeno</th>
+                          <th>Prodato</th>
+                          <th>Preostalo valute</th>
+                          <th>Ulozen novac</th>
+                          <th>+/-</th>
+                        </tr>
+                      </thead>
+                      {% for coin_name, values in result.items() %}
+                      <tbody>
+                        <tr>
+                          <td>{{coin_name}}</td>
+                          <td>{{values.kupljeno}}</td>
+                          <td>{{values.prodato}}</td>
+                          <td>{{values.preostalo}}</td>
+                          <td>{{values.ulozeno}}</td>
+                          {%if values.profit >= 0.0%}
+                            <td style="text-align: center;background-color: green;">{{"%.4f" % values.profit }}$</td>
+                          {% else %}
+                            <td style="text-align: center;background-color: red;">{{"%.4f" % values.profit }}$</td>
+                          {% endif%}
+                        </tr>
+                      </tbody>
+                      {% endfor %}
+                  </table>
+                  </div>
+              </td>
+          </tr>
+          <tr>
+              <td>
+                <div class="p">
+                  <p>Ukupna vrednost preostale valute: {{ukupnavrednost}}$</p>
+                  <p>Ukupan profit: {{ukupanprofit}}$</p>
+                  </div>
+                
+              </td>
+          </tr>
+        </table>
+      </td>
+
+  </tr>
+</table>
+  
+
+  
 </body>
 </html>

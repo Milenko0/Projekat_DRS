@@ -25,12 +25,16 @@ def user_loader(id):
 
 @app.route('/')
 def index():
+    if current_user.is_authenticated:
+        return redirect(url_for('portfolio'))
     return render_template('index.html')
 
 #login (homepage)
 #@app.route('/', methods=['GET','POST'])  
 @app.route("/auth/login", methods=['GET','POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('portfolio'))
     form = LoginForm()
     if form.validate_on_submit():
         email = form.email.data
@@ -60,6 +64,8 @@ def logout():
 #register
 @app.route('/auth/register', methods=['GET','POST'])
 def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('portfolio'))
     form = RegisterForm()
     if form.validate_on_submit():
         ime = form.ime.data
@@ -278,7 +284,12 @@ def kupovina(selected_coin, price, current_user_id, result_queue, datet):
             timestamp = int(datetime.strptime(datet, '%Y-%m-%dT%H:%M').timestamp() * 1000)
             valute = selected_coin + '/USDT' 
             response = exchange.fetch_ohlcv(valute, '1m', timestamp, 1)
-            onecoin = response[0][1]
+            try:
+                onecoin = response[0][1]
+            except:
+                result_queue.put('Neuspela transakcija')
+                return
+
             bought_amount = float(price) / onecoin
             python_datetime = datetime.strptime(datet, '%Y-%m-%dT%H:%M')
             new_transaction = Transaction(coin_name = selected_coin, korisnik_id = current_user_id,date=python_datetime, amount = bought_amount, price = price)
@@ -298,7 +309,11 @@ def prodaja(selected_coin, amount, current_user_id, result_queue, datet):
             timestamp = int(datetime.strptime(datet, '%Y-%m-%dT%H:%M').timestamp() * 1000)
             valute = selected_coin + '/USDT' 
             response = exchange.fetch_ohlcv(valute, '1m', timestamp, 1)
-            onecoin = response[0][1]
+            try:
+                onecoin = response[0][1]
+            except:
+                result_queue.put('Neuspela transakcija')
+                return
             price = onecoin * amount * -1.0
             python_datetime = datetime.strptime(datet, '%Y-%m-%dT%H:%M')
             new_transaction = Transaction(coin_name = selected_coin, korisnik_id = current_user_id,date=python_datetime, amount = amount, price = price)

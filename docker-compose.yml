@@ -14,7 +14,7 @@ services:
 
   db:
     image: 
-      - sqlite3:../database.db
+      - sqlite3:../flaskr/database.db
     volumes:
 
 volumes:
