@@ -1,24 +1,17 @@
 version: '3'
-services:
 
-  server:
-    build: ./app.py
+services:
+  web:
+    build: .
     ports:
-      - 5000:3000
-    links:
-      - db
+      - "5000:5000"
     depends_on:
       - db
     environment:
-      - app.py
+      - FLASK_APP=app.py
+      - FLASK_RUN_HOST=0.0.0.0
 
   db:
-    image: 
-      - sqlite3:../flaskr/database.db
+    image: "sqlite:latest"
     volumes:
-
-volumes:
-  db:
-    driver: local
-  server:
-    driver: local
+      - ./flaskr:/data
