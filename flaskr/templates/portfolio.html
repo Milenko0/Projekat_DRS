@@ -3,11 +3,82 @@
     <meta charset="UTF-8">
     <title>Crypto</title>
 </head>
-<body>
-    <a href="{{ url_for('store') }}">Unos nove transakcije</a>
-    <a href="{{ url_for('modify') }}">Izmena profila</a>
-    <a href="{{url_for('logout')}}">Izloguj se</a>
+<style>
+  *{
+    margin: 0;
+    padding: 0;
+    }
 
+  .header{
+      margin: auto;
+      padding: 15px 50px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: black;
+      }
+
+    .header ul {
+      margin-left: auto;
+    }
+
+    .header ul li{
+      list-style: none;
+      display: inline-block;
+      margin: 0 20px;
+      position: relative;
+    }
+
+    .header ul li a{
+        text-decoration: none;
+        color: #fff;
+        text-transform: uppercase;
+    }
+
+    .table-container {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px;
+        }
+
+        table {
+          font-size: 18px;
+            border-collapse: collapse;
+            background-color: #2c3d4b;
+            box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            width: 350px; /* Reduced width */
+            margin-bottom: 20px; /* Added margin */
+        }
+td,th{
+    padding: 12px 25px;
+    text-align: left;
+}
+thead{
+    box-shadow: 0 3px 6px #00000030;
+    background-color: darkorange;
+    border-radius: 10px;
+}
+th:first-child{
+    border-radius: 20px 0 0 0;
+}
+th:last-child{
+    border-radius: 0 20px 0 0;
+}
+tr:nth-child(even){
+    background-color: #364a5a;
+}
+</style>
+<body>
+  <div class="header">
+    <ul>
+      <li><a href="{{url_for('portfolio')}}">Portfolio</a></li>
+      <li><a href="{{url_for('store')}}">Unos transakcije</a></li>
+      <li><a href="{{ url_for('modify') }}">Izmena profila</a></li>
+      <li><a href="{{url_for('logout')}}">Izloguj se</a></li>
+    </ul>
+  </div>
+  <div class="table-container">
     <table style="width: 700px; border-collapse: collapse;">
         <tr >
             <th>Valuta</th>
@@ -29,6 +100,7 @@
         </form>
         {% endfor %}
     </table>
+    
     <table style="width: 800px; border: 2px;" border="1">
         <thead>
           <tr>
@@ -57,11 +129,8 @@
         </tbody>
         {% endfor %}
     </table>
+    </div>
     <p>Ukupna vrednost preostale valute: {{ukupnavrednost}}$</p>
     <p>Ukupan profit: {{ukupanprofit}}$</p>
-          
-    
-
-
 </body>
 </html>

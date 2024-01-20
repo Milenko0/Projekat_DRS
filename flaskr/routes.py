@@ -23,20 +23,29 @@ login_manager.init_app(app)
 def user_loader(id):
     return Korisnici.query.get(int(id))
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 #login (homepage)
-@app.route('/', methods=['GET','POST'])  
+#@app.route('/', methods=['GET','POST'])  
 @app.route("/auth/login", methods=['GET','POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
         email = form.email.data
         lozinka = form.lozinka.data
+        result_queue = Queue()
         if(email == "" or email.isspace()
            or  lozinka == "" or lozinka.isspace()):
+            result_queue.put('Uneli ste neispravne podatke!')
+            flash(result_queue.get())
             return redirect(url_for('login'))
         u = Korisnici.query.filter_by(email=email).first()
         
         if (not u or u.lozinka!=lozinka):
+            result_queue.put('Uneli ste neispravne podatke!')
+            flash(result_queue.get())
             return redirect(url_for('login'))
         login_user(u)
         return redirect(url_for('store'))
@@ -70,8 +79,14 @@ def register():
             or telefon == "" or telefon.isspace()
             or email == "" or email.isspace()
             or lozinka == "" or lozinka.isspace()
-            or lozinka =="" or lozinka.isspace() or lozinka!=lozinka_confirm):
+            or lozinka_confirm =="" or lozinka_confirm.isspace() or lozinka != lozinka_confirm):
+            flash('Unesite validne podatke.')
             return redirect(url_for('register'))
+        if (Korisnici.query.filter_by(email=email).first()):
+                result_queue = Queue()
+                result_queue.put('Uneli ste email koji je vec registrovan!')
+                flash(result_queue.get())
+                return redirect(url_for('register'))
         u = Korisnici(ime=ime, prezime= prezime, adresa=adresa, grad=grad, drzava=drzava, telefon=telefon, email=email, lozinka=lozinka)
         db.session.add(u)
         db.session.commit()
@@ -115,7 +130,12 @@ def store():
         if button == 'kupovina':
             selected_coin = request.form.get('selected_coin')
             datet = request.form.get('datetime')
-            price = request.form.get('price')
+            try:
+                price = float(request.form.get('price'))
+            except ValueError:
+                flash('Unesena kupovna cena nije validna.')
+                return redirect(url_for('store'))
+            
             result_queue = Queue()
             p = Process(target=kupovina, args=(selected_coin, price, current_user.id, result_queue, datet))
         
@@ -129,7 +149,13 @@ def store():
                  suma-=transaction.amount
             selected_coin = request.form.get('selected_coin_p')
             datet = request.form.get('datetime_p')
-            amount = float(request.form.get('amount'))
+            try:
+                amount = float(request.form.get('amount'))
+            except ValueError:
+                flash('Unesena vrednost količine nije validna.')
+                return redirect(url_for('store'))
+
+            
             result_queue = Queue()
             if suma < amount:
                 
@@ -210,6 +236,7 @@ def modify():
     grad = form.grad.data
     drzava = form.drzava.data
     telefon = form.telefon.data
+    email = form.email.data
     lozinka = form.lozinka.data
     lozinkapotvrde = form.lozinkapotvrde.data
     izmena = Korisnici.query.filter_by(id=current_user.id).first()
@@ -225,11 +252,22 @@ def modify():
             izmena.drzava = drzava
     if(telefon != "" and not telefon.isspace()):
             izmena.telefon = telefon
-    if(lozinka == lozinkapotvrde and lozinka != "" and not lozinka.isspace() and 
-                lozinkapotvrde != "" and not lozinkapotvrde.isspace()):
-            izmena.lozinka = lozinka
+    if(email !="" and not email.isspace()):
+            if (Korisnici.query.filter_by(email=email).first()):
+                result_queue = Queue()
+                result_queue.put('Uneli ste email koji je vec registrovan!')
+                flash(result_queue.get())
+                return redirect(url_for('modify'))
+            izmena.email = email
+  
+    if(lozinka != "" and not lozinka.isspace()): 
+            if(lozinka != lozinkapotvrde): 
+                    flash('Unete lozinke nisu iste.')
+                    return redirect(url_for('modify'))
+            if(lozinkapotvrde != "" and not lozinkapotvrde.isspace()):
+                izmena.lozinka = lozinka
     db.session.commit()
-    return redirect(url_for('store'))
+    return redirect(url_for('portfolio'))
     
 def kupovina(selected_coin, price, current_user_id, result_queue, datet):
     with app.app_context():  
@@ -246,10 +284,10 @@ def kupovina(selected_coin, price, current_user_id, result_queue, datet):
             new_transaction = Transaction(coin_name = selected_coin, korisnik_id = current_user_id,date=python_datetime, amount = bought_amount, price = price)
             db.session.add(new_transaction)
             db.session.commit()
-            result_queue.put('Transakcija uspesna')
+            result_queue.put('Transakcija je uspesno zabelezena')
             return
         else:
-            result_queue.put('Nemate dovoljno novca za zeljenu kupovinu')
+            result_queue.put('Neuspela transakcija')
             return
         
 def prodaja(selected_coin, amount, current_user_id, result_queue, datet):
@@ -266,8 +304,8 @@ def prodaja(selected_coin, amount, current_user_id, result_queue, datet):
             new_transaction = Transaction(coin_name = selected_coin, korisnik_id = current_user_id,date=python_datetime, amount = amount, price = price)
             db.session.add(new_transaction)
             db.session.commit()
-            result_queue.put('Transakcija uspesna')
+            result_queue.put('Transakcija je uspesno zabelezena')
             return
         else:
-            result_queue.put('Neuspesan unos')
+            result_queue.put('Neuspela transakcija')
             return

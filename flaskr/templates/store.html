@@ -4,6 +4,10 @@
     <title>Crypto</title>
 </head>
 <style>
+    *{
+    margin: 0;
+    padding: 0;
+    }
     td {
     text-align: center;
     border: 2px;
@@ -13,11 +17,42 @@
     border: 1px black;
 
   }
+
+  .header{
+    margin: auto;
+    padding: 15px 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: black;
+    }
+
+    .header ul {
+    margin-left: auto;
+    }
+
+    .header ul li{
+    list-style: none;
+    display: inline-block;
+    margin: 0 20px;
+    position: relative;
+    }
+
+    .header ul li a{
+        text-decoration: none;
+        color: #fff;
+        text-transform: uppercase;
+    }
 </style>
 <body>
-    <a href="{{url_for('modify')}}">Izmena profila</a>
-    <a href="{{url_for('portfolio')}}">Portfolio</a>
-    <a href="{{url_for('logout')}}">Izloguj se</a>
+    <div class="header">
+        <ul>
+            <li><a href="{{url_for('portfolio')}}">Portfolio</a></li>
+            <li><a href="{{url_for('store')}}">Unos transakcije</a></li>
+            <li><a href="{{ url_for('modify') }}">Izmena profila</a></li>
+            <li><a href="{{url_for('logout')}}">Izloguj se</a></li>
+        </ul>
+    </div>
     <div>
         <table style="width: 700px; border-collapse: collapse;">
             <tr >
@@ -54,7 +89,7 @@
                 {% endfor %}
             </select>
             <input type="datetime-local" id="datetime" name="datetime"/>
-            <input type="number" id="price" name="price"/>
+            <input type="text" id="price" name="price"/>
             <button type="submit" name="submitbtn" value="kupovina" >kupovina</button>
         </form>
             {% if imakupovina %}

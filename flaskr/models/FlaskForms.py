@@ -26,6 +26,7 @@ class ModifyForm(FlaskForm):
     grad=StringField(validators=[Length(min=2, max=20)])
     drzava = StringField(validators=[Length(min=4, max=20)])
     telefon = StringField(validators=[Length(min=8, max=10)])
+    email = EmailField(validators=[Email(),Length(max=40)])
     lozinka = PasswordField(validators=[Length(min=8,max=40)])
     lozinkapotvrde = PasswordField(validators=[Length(min=8,max=40)])
     submit = SubmitField(label='Izmeni nalog')
