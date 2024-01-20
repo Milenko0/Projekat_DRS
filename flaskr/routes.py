@@ -61,6 +61,7 @@ def register():
         telefon = form.telefon.data
         email = form.email.data
         lozinka = form.lozinka.data
+        lozinka_confirm = form.lozinka_confirm.data
         if (ime == "" or ime.isspace()
             or prezime == "" or prezime.isspace()
             or adresa == "" or adresa.isspace()
@@ -68,7 +69,8 @@ def register():
             or drzava == "" or drzava.isspace()
             or telefon == "" or telefon.isspace()
             or email == "" or email.isspace()
-            or lozinka == "" or lozinka.isspace()):
+            or lozinka == "" or lozinka.isspace()
+            or lozinka =="" or lozinka.isspace() or lozinka!=lozinka_confirm):
             return redirect(url_for('register'))
         u = Korisnici(ime=ime, prezime= prezime, adresa=adresa, grad=grad, drzava=drzava, telefon=telefon, email=email, lozinka=lozinka)
         db.session.add(u)

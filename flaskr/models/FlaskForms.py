@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import EmailField, PasswordField, SubmitField, StringField
-from wtforms.validators import Email, DataRequired, Length
+from wtforms.validators import Email, DataRequired, Length, EqualTo
 
 class LoginForm(FlaskForm):
     email = EmailField(validators=[Email(),DataRequired(),Length(max=40)])
@@ -16,6 +16,7 @@ class RegisterForm(FlaskForm):
     telefon = StringField(validators=[DataRequired(),Length(min=8, max=10)])
     email = EmailField(validators=[Email(),DataRequired(),Length(max=40)])
     lozinka = PasswordField(validators=[DataRequired(),Length(min=8,max=40)])
+    lozinka_confirm = PasswordField(validators=[DataRequired(),Length(min=8,max=40), EqualTo('lozinka', message='Lozinke se ne poklapaju!')])
     submit = SubmitField(label='Otvori nalog')
 
 class ModifyForm(FlaskForm):
