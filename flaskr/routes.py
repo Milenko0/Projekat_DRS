@@ -48,7 +48,7 @@ def login():
             flash(result_queue.get())
             return redirect(url_for('login'))
         login_user(u)
-        return redirect(url_for('store'))
+        return redirect(url_for('portfolio'))
     return render_template('auth/login.html',form=form)
 
 @app.route('/logout')
@@ -133,7 +133,7 @@ def store():
             try:
                 price = float(request.form.get('price'))
             except ValueError:
-                flash('Unesena kupovna cena nije validna.')
+                flash('Uneta kupovna cena nije validna.')
                 return redirect(url_for('store'))
             
             result_queue = Queue()

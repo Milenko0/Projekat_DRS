@@ -26,147 +26,46 @@
     color: #fff;
     }
 
-.form h1{
-    font-size: 25px;
-    text-align: center;
-    text-transform: uppercase;
-    margin: 30px 0;
-    color: black;
-    width: 100%;
-}
+    .form h1{
+        font-size: 25px;
+        text-align: center;
+        text-transform: uppercase;
+        margin: 30px 0;
+        color: black;
+        width: 100%;
+    }
 
-.form input{
-    font-size: 16px;
-    width: 100%;
-    padding: 10px 10px;
-    margin-bottom: 15px;
-    border: 0;
-    outline: none;
-    border-radius: 5px;
-}
+    .form .input{
+        font-size: 16px;
+        width: 100%;
+        padding: 10px 10px;
+        margin-bottom: 15px;
+        border: 0;
+        outline: none;
+        border-radius: 5px;
+    }
 
-.form button{
-    font-size: 12px;
-    font-weight: bold;
-    margin: 15px 0;
-    padding: 10px 15px;
-    width: 50%;
-    border-radius: 10px;
-    border: 0;
-}
+    .form .button{
+        font-size: 15px;
+        font-weight: bold;
+        margin-top: 10px;
+        padding: 10px 10px;
+        width: 50%;
+        border-radius: 10px;
+        border: 0;
+        float: right;
+    }
 
-.form-sort{
-    width: 350px;
-    top: 70%;
-    left: 20%;
-    transform: translate(-50%, -50%);
-    position: absolute;
-    color: #fff;
-}
+    .form .button:hover {
+        background-color: green; 
+    }
 
-.form-sort h1{
-    font-size: 20px;
-    text-align: center;
-    text-transform: uppercase;
-    margin: 20px 0;
-}
-
-.form-sort input{
-    font-size: 16px;
-    width: 100%;
-    padding: 10px 10px;
-    border: 0;
-    outline: none;
-    border-radius: 5px;
-}
-
-.form-sort button{
-    font-size: 12px;
-    font-weight: bold;
-    margin: 15px 0;
-    padding: 10px 15px;
-    width: 50%;
-    border-radius: 10px;
-    border: 0;
-}
-
-.form-filter{
-    width: 350px;
-    top: 70%;
-    left: 80%;
-    transform: translate(-50%, -50%);
-    position: absolute;
-    color: #fff;
-}
-
-.form-filter h1{
-    font-size: 20px;
-    text-align: center;
-    text-transform: uppercase;
-    margin: 20px 0;
-}
-
-.form-filter input{
-    font-size: 16px;
-    width: 100%;
-    padding: 10px 10px;
-    border: 0;
-    outline: none;
-    border-radius: 5px;
-}
-
-.form-filter button{
-
-    font-size: 12px;
-    font-weight: bold;
-    margin: 15px 0;
-    padding: 10px 15px;
-    width: 50%;
-    border-radius: 10px;
-    border: 0;
-}
-
-.form-change{
-    width: 150px;
-    top: 70%;
-    left: 20%;
-    transform: translate(-50%, -50%);
-    position: absolute;
-    color: #fff;
-}
-
-.form-change h1{
-    font-size: 20px;
-    text-align: center;
-    text-transform: uppercase;
-    margin: 20px 0;
-}
-
-.form-change input{
-    font-size: 16px;
-    width: 100%;
-    padding: 10px 10px;
-    border: 0;
-    outline: none;
-    border-radius: 5px;
-}
-
-.form-change button{
-    font-size: 12px;
-    font-weight: bold;
-    margin: 15px 0;
-    padding: 10px 15px;
-    width: 60%;
-    border-radius: 10px;
-    border: 0;
-}
-
-.header{
-    margin: auto;
-    padding: 30px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    .header{
+        margin: auto;
+        padding: 30px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
 
     .header ul {
@@ -174,10 +73,10 @@
     }
 
     .header ul li{
-    list-style: none;
-    display: inline-block;
-    margin: 0 20px;
-    position: relative;
+        list-style: none;
+        display: inline-block;
+        margin: 0 20px;
+        position: relative;
     }
 
     .header ul li a{
@@ -198,23 +97,23 @@
             <h1>Registracija</h1>
             <form method="POST">
                 {{ form.hidden_tag() }}
-                {{form.ime(placeholder ="Ime")}}
+                {{form.ime(class="input", placeholder ="Ime")}}
                 <br />
-                {{form.prezime(placeholder ="Prezime")}}
+                {{form.prezime(class="input", placeholder ="Prezime")}}
                 <br />
-                {{form.adresa(placeholder ="Adresa")}}
+                {{form.adresa(class="input", placeholder ="Adresa")}}
                 <br />
-                {{form.grad(placeholder ="Grad")}}
+                {{form.grad(class="input", placeholder ="Grad")}}
                 <br />
-                {{form.drzava(placeholder ="Država")}}
+                {{form.drzava(class="input", placeholder ="Država")}}
                 <br />
-                {{form.telefon(placeholder ="Broj telefona")}}
+                {{form.telefon(class="input", placeholder ="Broj telefona")}}
                 <br />
-                {{form.email(placeholder ="Email")}}
+                {{form.email(class="input", placeholder ="Email")}}
                 <br />
-                {{form.lozinka(placeholder ="Lozinka")}}
+                {{form.lozinka(class="input", placeholder ="Lozinka")}}
                 <br />
-                {{form.lozinka_confirm(placeholder ="Potvrda lozinke")}}
+                {{form.lozinka_confirm(class="input", placeholder ="Potvrda lozinke")}}
                 {% with messages = get_flashed_messages() %}
                     {% if messages %}
                     <div style="color: red; font-weight: bold; font-size: medium;">
@@ -223,7 +122,7 @@
                     {% endif %}
                 {% endwith %}
                 <br />
-                {{form.submit}}
+                {{form.submit(class="button")}}
             </form>
         </div>
     </div>

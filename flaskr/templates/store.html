@@ -5,37 +5,43 @@
 </head>
 <style>
     *{
-    margin: 0;
-    padding: 0;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
     }
+
+    body {
+        font-family: Arial, sans-serif;
+    }
+
     td {
-    text-align: center;
-    border: 2px;
-    border-color: black;
-  }
+        text-align: center;
+        border: 2px;
+        border-color: black;
+    }
+
     tr{
-    border: 1px black;
+        border: 1px black;
+    }
 
-  }
-
-  .header{
-    margin: auto;
-    padding: 15px 50px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: black;
+    .header{
+        margin: auto;
+        padding: 15px 50px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: black;
     }
 
     .header ul {
-    margin-left: auto;
+        margin-left: auto;
     }
 
     .header ul li{
-    list-style: none;
-    display: inline-block;
-    margin: 0 20px;
-    position: relative;
+        list-style: none;
+        display: inline-block;
+        margin: 0 20px;
+        position: relative;
     }
 
     .header ul li a{
@@ -43,6 +49,70 @@
         color: #fff;
         text-transform: uppercase;
     }
+
+    .content {
+        display: flex;
+        justify-content: space-between;
+        margin: 20px;
+    }
+
+    table{
+        font-size: 18px;
+        border-collapse: collapse;
+        background-color: #2c3d4b;
+        box-shadow: 3px 3px 3px rgba(0,0,0,0.1);
+        border-radius: 20px;
+        width: 60%;
+        margin-right: 20px;
+    }
+
+    thead{
+        box-shadow: 0 3px 6px #00000030;
+        background-color: darkorange;
+        border-radius: 20px;
+    }
+
+    .actions {
+        width: 35%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .kupovina, .prodaja {
+        margin-bottom: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+    }
+
+    .kupovina h4, .prodaja h4 {
+        margin-bottom: 10px;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    input, select, button {
+        margin-bottom: 10px;
+        padding: 8px;
+    }
+
+    .actions button{
+        border-radius: 10px;
+        border: 0;
+        max-width: 30%;
+    }
+
+    .actions button:hover {
+        background-color: green; 
+    }
+    
+    .actions label{
+        font-size: 15px;
+    }
+    
 </style>
 <body>
     <div class="header">
@@ -53,14 +123,16 @@
             <li><a href="{{url_for('logout')}}">Izloguj se</a></li>
         </ul>
     </div>
-    <div>
+    <div class="content">
         <table style="width: 700px; border-collapse: collapse;">
+            <thead>
             <tr >
                 <th>Name</th>
                 <th>Symbol</th>
                 <th>Price</th>
                 <th>Updated</th>
             </tr>
+            </thead>
             {% for obj in cryptos %}
             <tr >
               <td style="background-color: aliceblue;" >{{obj.name}}</td>
@@ -72,13 +144,16 @@
         </table>
         {% with messages = get_flashed_messages() %}
             {% if messages %}
-                <div style="color: rgb(38, 15, 246); font-weight: bold; font-size: medium;">
+                <div style="color: green; font-weight: bold; font-size: medium;">
                     {{ messages[0] }}<br> 
                 </div>
             {% endif %}
         {% endwith %}
+        <div class="actions">
+        <div class="kupovina">
         <h4>Kupovina</h4>
         <form method="POST">
+            <label for="valuta_p">Valuta:</label>
             <select id="selected_coin" name="selected_coin">
                 {%for coin in coins%}
                     {%for crypto in cryptos%}
@@ -88,13 +163,18 @@
                     {% endfor %}
                 {% endfor %}
             </select>
+            <label for="datetime_p">Datum i vreme:</label>
             <input type="datetime-local" id="datetime" name="datetime"/>
+            <label for="price_p">Kupovna cena:</label>
             <input type="text" id="price" name="price"/>
             <button type="submit" name="submitbtn" value="kupovina" >kupovina</button>
         </form>
+        </div>
             {% if imakupovina %}
+            <div class="prodaja">
                 <h4>Prodaja</h4>
                 <form method="POST">
+                    <label for="valuta_p">Valuta:</label>
                     <select id="selected_coin_p" name="selected_coin_p">
                         {%for coin in coins%}
                             {%for crypto in cryptos%}
@@ -104,10 +184,14 @@
                             {% endfor %}
                         {% endfor %}
                     </select>
+                    <label for="datetime_p">Datum i vreme:</label>
                     <input type="datetime-local" id="datetime_p" name="datetime_p"/>
+                    <label for="amount_p">Iznos:</label>
                     <input type="text" id="amount" name="amount"/>
                     <button type="submit" name="submitbtn" value="prodaja">prodaja</button>
                 </form>
+                </div>
             {% endif %}
+        </div>
     </div>
 </body>
